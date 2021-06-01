@@ -29,7 +29,7 @@ public:
         Iterator& operator--();
         friend class NodeList;
         friend std::ostream& operator<< <> (std::ostream& os, const NodeList<E>& ls);
-    private:
+    //private:
         Node* v;
         Iterator(Node* u);
         ~Iterator() = default;
