@@ -5,8 +5,6 @@
 template<typename E>
 class NodeList;
 
-template<typename E>
-class NodeSequence;
 
 template<typename E>
 std::ostream& operator<< (std::ostream& os, const NodeList<E>& ls);
@@ -30,7 +28,6 @@ public:
         Iterator& operator++(int);
         Iterator& operator--();
         friend class NodeList;
-        friend class NodeSequence<E>;
         friend std::ostream& operator<< <> (std::ostream& os, const NodeList<E>& ls);
     protected:
         Node* v;
