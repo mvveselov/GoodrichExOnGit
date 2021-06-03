@@ -20,20 +20,23 @@ private:
     };
 public:
     class Iterator {
-    public:
-        E& operator*();
-        bool operator==(const Iterator& p) const;
-        bool operator!=(const Iterator& p) const;
-        Iterator& operator++();
-        Iterator& operator++(int);
-        Iterator& operator--();
-        friend class NodeList;
-        friend std::ostream& operator<< <> (std::ostream& os, const NodeList<E>& ls);
-    protected:
-        Node* v;
-        Iterator(Node* u);
-    public:
-        ~Iterator() = default;
+        public:
+            E& operator*();
+            bool operator==(const Iterator& p) const;
+            bool operator!=(const Iterator& p) const;
+            Iterator& operator++();
+            Iterator& operator++(int);
+            Iterator& operator--();
+            Iterator& operator=(const Iterator& obj);
+            friend class NodeList;
+            friend std::ostream& operator<< <> (std::ostream& os, const NodeList<E>& ls);
+        private:   
+            Node* indicator_header_trailer;
+           // Node* indicator_trailer;
+            Node* v;
+            Iterator(Node* indicator, Node* u);
+        public:
+            ~Iterator() = default;
     };
 public:
     NodeList();
@@ -47,6 +50,7 @@ public:
     void insertFront(const E& e);
     void insertBack(const E& e);
     void insert(const Iterator& p, const E& e);
+    void inserterr(const Iterator& p, const E& e);
     void eraseFront();
     void eraseBack();
     void erase(const Iterator& p);
@@ -79,17 +83,18 @@ private:
     template<typename E>
     typename NodeList<E>::Iterator NodeList<E>::begin() const { // where trailer points to
        // std::cout << "Iterator begin() created\n";
-        return Iterator(header->next);
+        return Iterator(header, header->next);
     }
     
     template<typename E>
     typename NodeList<E>::Iterator NodeList<E>::end() const {
        // std::cout << "Iterator end() created\n";
-        return Iterator(trailer);
+        return Iterator(trailer, trailer);
     }
     
     template<typename E>
-    void NodeList<E>::insert(const NodeList<E>::Iterator& p, const E& e) {
+    void NodeList<E>::insert( const NodeList<E>::Iterator& p, const E& e) {
+        
         Node* w = p.v; // second
         Node* u = w->prev; // first
         Node* v = new Node;
@@ -98,6 +103,25 @@ private:
         v->prev = u; u->next = v; // v is between first and second
         n++;
     }
+    
+    
+    template<typename E>
+    void NodeList<E>::inserterr(const NodeList<E>::Iterator& p, const E& e) {
+        if (p.indicator_header_trailer == this->header || p.indicator_header_trailer == this->trailer) {
+            Node* w = p.v; // second
+            Node* u = w->prev; // first
+            Node* v = new Node;
+            v->elem = e;
+            v->next = w; w->prev = v;
+            v->prev = u; u->next = v; // v is between first and second
+            n++;
+        } 
+        
+        else std::cout << "Error, wrong object" << std::endl;
+        
+    }
+    
+    
     
     template<typename E>
     void NodeList<E>::insertFront(const E& e) {
@@ -170,9 +194,11 @@ private:
     }
     
     
-    // iterators
+    ///////////////// iterators////////////////////////////
+    
     template<typename E>
-    NodeList<E>::Iterator::Iterator(Node* u) {
+    NodeList<E>::Iterator::Iterator(Node* indicator, Node* u) {
+        indicator_header_trailer = indicator;
         v = u;
     }
     
@@ -206,6 +232,12 @@ private:
         v = v->prev; return *this;
     }
     
+    template<typename E>
+    typename NodeList<E>::Iterator& NodeList<E>::Iterator::operator= (const Iterator& obj) {
+        this->v = obj.v;
+        this->indicator_header_trailer = obj.indicator_header_trailer;
+        return *this;
+    }
 
     
 
